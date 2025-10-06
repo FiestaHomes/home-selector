@@ -42,7 +42,7 @@ button:hover { background: #004c99; }
 </select>
 
 <label>Payment Range ($):</label>
-<input type="text" id="payment" placeholder="e.g. 1000-1500">
+<input type="text" id="payment" placeholder="e.g. 1300-1500">
 
 <button onclick="filterHomes()">Find Homes</button>
 </div>
@@ -76,7 +76,7 @@ function filterHomes() {
     // Bathrooms filter (minimum)
     let matchBaths = !baths || (baths==="3+" ? h.bathrooms>=3 : h.bathrooms>=parseInt(baths));
 
-    // Payment filter - strict within range
+    // Payment filter - STRICT within user range
     let matchPayment = true;
     if(paymentInput){
       const input = paymentInput.replace(/\s/g,''); // remove spaces
@@ -85,14 +85,14 @@ function filterHomes() {
       if(input.includes('-')){
         const [userMin, userMax] = input.split('-').map(x=>parseInt(x));
         if(!isNaN(userMin) && !isNaN(userMax)){
-          // Strict: home must be fully within user range
+          // STRICT: homeMin and homeMax must BOTH be inside user range
           matchPayment = homeMin >= userMin && homeMax <= userMax;
         }
       } else {
         const val = parseInt(input);
         if(!isNaN(val)){
-          // Single number: home must fit exactly
-          matchPayment = homeMin >= val && homeMax <= val;
+          // Single number: home must match exactly
+          matchPayment = homeMin === val && homeMax === val;
         }
       }
     }
