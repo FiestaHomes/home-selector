@@ -28,40 +28,40 @@ button:hover { background: #004c99; }
 <h1>🏡 Fiesta Homes Selector</h1>
 
 <div class="filter-section">
-<label>Bedrooms (exact):</label>
-<select id="bedrooms">
-<option value="">Any</option>
-<option value="2">2</option>
-<option value="3">3</option>
-<option value="4">4</option>
-<option value="5">5</option>
-</select>
+  <label>Bedrooms (exact):</label>
+  <select id="bedrooms">
+    <option value="">Any</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+  </select>
 
-<label>Bathrooms (exact):</label>
-<select id="bathrooms">
-<option value="">Any</option>
-<option value="1">1</option>
-<option value="2">2</option>
-<option value="3">3</option>
-</select>
+  <label>Bathrooms (exact):</label>
+  <select id="bathrooms">
+    <option value="">Any</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+  </select>
 
-<div class="slider-container">
-  <label class="slider-label">
-    <span>Payment Range ($):</span>
-    <span id="payment-display">1000 - 2000</span>
-  </label>
-  <input type="range" id="payment-min" min="0" max="5000" value="1000" step="50">
-  <input type="range" id="payment-max" min="0" max="5000" value="2000" step="50">
-</div>
+  <div class="slider-container">
+    <label class="slider-label">
+      <span>Payment Range ($):</span>
+      <span id="payment-display">1000 - 2000</span>
+    </label>
+    <input type="range" id="payment-min" min="0" max="5000" value="1000" step="50">
+    <input type="range" id="payment-max" min="0" max="5000" value="2000" step="50">
+  </div>
 
-<div class="checkbox-container">
-  <label><input type="radio" name="placement" id="park" value="400" onchange="filterHomes()"> Park (+$400)</label>
-  <label><input type="radio" name="placement" id="land" value="800" onchange="filterHomes()"> Land (+$800)</label>
-  <label><input type="checkbox" id="taxes" value="300" onchange="filterHomes()"> Property Taxes & Insurance (+$300)</label>
-</div>
+  <div class="checkbox-container">
+    <label><input type="radio" name="placement" id="park" value="400" onchange="filterHomes()"> Park (+$400)</label>
+    <label><input type="radio" name="placement" id="land" value="800" onchange="filterHomes()"> Land (+$800)</label>
+    <label><input type="checkbox" id="taxes" value="300" onchange="filterHomes()"> Property Taxes & Insurance (+$300)</label>
+  </div>
 
-<button onclick="filterHomes()">Find Homes</button>
-<button onclick="resetFilters()">Reset</button>
+  <button onclick="filterHomes()">Find Homes</button>
+  <button onclick="resetFilters()">Reset</button>
 </div>
 
 <div class="results" id="results">
@@ -111,11 +111,11 @@ function filterHomes() {
   maxPayment += parkAdd + landAdd + taxesAdd;
 
   const filtered = homes.filter(h => {
-    let matchBeds = !beds || h.bedrooms === parseInt(beds);
-    let matchBaths = !baths || h.bathrooms === parseInt(baths);
+    const matchBeds = !beds || h.bedrooms === parseInt(beds);
+    const matchBaths = !baths || h.bathrooms === parseInt(baths);
 
     const [homeMin, homeMax] = h.payment.split("-").map(x => parseInt(x.replace(/[$,]/g,'').trim()));
-    let matchPayment = homeMin >= minPayment && homeMax <= maxPayment;
+    const matchPayment = homeMin >= minPayment && homeMax <= maxPayment;
 
     return matchBeds && matchBaths && matchPayment;
   });
