@@ -41,9 +41,6 @@ button:hover { background: #004c99; }
 <option value="3+">3+</option>
 </select>
 
-<label>Max Price ($):</label>
-<input type="number" id="maxPrice" placeholder="e.g. 200000">
-
 <label>Payment Range ($):</label>
 <input type="text" id="payment" placeholder="e.g. 1000-1500">
 
@@ -62,7 +59,7 @@ fetch('homes.json')
   .then(response => response.json())
   .then(data => {
     homes = data;
-    console.log("Loaded homes:", homes); // Debug: confirm homes loaded
+    console.log("Loaded homes:", homes);
     filterHomes(); // Show all homes initially
   })
   .catch(err => console.error("Error loading homes.json:", err));
@@ -70,7 +67,6 @@ fetch('homes.json')
 function filterHomes() {
   const beds = document.getElementById("bedrooms").value;
   const baths = document.getElementById("bathrooms").value;
-  const maxPrice = parseInt(document.getElementById("maxPrice").value);
   const paymentInput = document.getElementById("payment").value;
 
   let filtered = homes.filter(h => {
@@ -79,9 +75,6 @@ function filterHomes() {
 
     // Bathrooms filter (minimum)
     let matchBaths = !baths || (baths==="3+" ? h.bathrooms>=3 : h.bathrooms>=parseInt(baths));
-
-    // Price filter (max)
-    let matchPrice = !maxPrice || h.price<=maxPrice;
 
     // Payment filter (robust, inclusive)
     let matchPayment = true;
@@ -103,7 +96,7 @@ function filterHomes() {
       }
     }
 
-    return matchBeds && matchBaths && matchPrice && matchPayment;
+    return matchBeds && matchBaths && matchPayment;
   });
 
   // Sort by price ascending
