@@ -17,6 +17,8 @@ button:hover { background: #004c99; }
 .home-card p { margin: 5px 0; }
 .contact-btn { display:inline-block; margin-top:10px; padding:8px 12px; background:#0066cc; color:white; border-radius:6px; text-decoration:none; }
 .contact-btn:hover { background:#004c99; }
+.slider-container { margin-bottom: 15px; }
+.slider-label { display:flex; justify-content:space-between; }
 </style>
 </head>
 <body>
@@ -41,8 +43,14 @@ button:hover { background: #004c99; }
 <option value="3+">3+</option>
 </select>
 
-<label>Payment Range ($):</label>
-<input type="text" id="payment" placeholder="e.g. 1300-1500">
+<div class="slider-container">
+  <label class="slider-label">
+    <span>Payment Range ($):</span>
+    <span id="payment-display">1000 - 2000</span>
+  </label>
+  <input type="range" id="payment-min" min="0" max="5000" value="1000" step="50">
+  <input type="range" id="payment-max" min="0" max="5000" value="2000" step="50">
+</div>
 
 <button onclick="filterHomes()">Find Homes</button>
 </div>
@@ -59,14 +67,31 @@ fetch('homes.json')
   .then(response => response.json())
   .then(data => {
     homes = data;
-    filterHomes(); // Show all homes initially
+    filterHomes(); // show all homes initially
   })
   .catch(err => console.error("Error loading homes.json:", err));
+
+// Update displayed slider values
+const paymentMin = document.getElementById("payment-min");
+const paymentMax = document.getElementById("payment-max");
+const paymentDisplay = document.getElementById("payment-display");
+
+function updatePaymentDisplay() {
+  let minVal = parseInt(paymentMin.value);
+  let maxVal = parseInt(paymentMax.value);
+  if(minVal > maxVal) [minVal, maxVal] = [maxVal, minVal]; // swap if min > max
+  paymentDisplay.textContent = `${minVal} - ${maxVal}`;
+}
+
+paymentMin.addEventListener("input", updatePaymentDisplay);
+paymentMax.addEventListener("input", updatePaymentDisplay);
 
 function filterHomes() {
   const beds = document.getElementById("bedrooms").value;
   const baths = document.getElementById("bathrooms").value;
-  const paymentInput = document.getElementById("payment").value;
+  let minPayment = parseInt(paymentMin.value);
+  let maxPayment = parseInt(paymentMax.value);
+  if(minPayment > maxPayment) [minPayment, maxPayment] = [maxPayment, minPayment];
 
   const filtered = homes.filter(h => {
     // Bedrooms filter (minimum)
@@ -74,29 +99,13 @@ function filterHomes() {
     // Bathrooms filter (minimum)
     let matchBaths = !baths || (baths==="3+" ? h.bathrooms >= 3 : h.bathrooms >= parseInt(baths));
 
-    // Payment filter - strict within user range
-    let matchPayment = true;
-    if(paymentInput){
-      const input = paymentInput.replace(/\s/g,''); // remove spaces
-      const [homeMin, homeMax] = h.payment.split("-").map(x => parseInt(x.trim()));
-      
-      if(input.includes('-')){
-        const [userMin, userMax] = input.split('-').map(x => parseInt(x.trim()));
-        if(!isNaN(userMin) && !isNaN(userMax)){
-          matchPayment = homeMin >= userMin && homeMax <= userMax;
-        }
-      } else {
-        const val = parseInt(input);
-        if(!isNaN(val)){
-          matchPayment = homeMin === val && homeMax === val;
-        }
-      }
-    }
+    // Payment filter - strict within slider range
+    const [homeMin, homeMax] = h.payment.split("-").map(x => parseInt(x.trim()));
+    let matchPayment = homeMin >= minPayment && homeMax <= maxPayment;
 
     return matchBeds && matchBaths && matchPayment;
   });
 
-  // Sort by price ascending
   filtered.sort((a,b)=>a.price-b.price);
 
   const resultsDiv = document.getElementById("results");
@@ -122,6 +131,9 @@ function filterHomes() {
     resultsDiv.appendChild(card);
   });
 }
+
+// Initialize display
+updatePaymentDisplay();
 </script>
 
 </body>
