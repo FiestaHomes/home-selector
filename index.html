@@ -74,26 +74,31 @@ function filterHomes() {
   const paymentInput = document.getElementById("payment").value;
 
   let filtered = homes.filter(h => {
-    // Bedrooms filter
+    // Bedrooms filter (minimum)
     let matchBeds = !beds || (beds==="5+" ? h.bedrooms>=5 : h.bedrooms>=parseInt(beds));
 
-    // Bathrooms filter
+    // Bathrooms filter (minimum)
     let matchBaths = !baths || (baths==="3+" ? h.bathrooms>=3 : h.bathrooms>=parseInt(baths));
 
-    // Price filter
+    // Price filter (max)
     let matchPrice = !maxPrice || h.price<=maxPrice;
 
-    // Payment filter
+    // Payment filter (robust, inclusive)
     let matchPayment = true;
     if(paymentInput){
-      const parts = paymentInput.split("-");
-      if(parts.length === 2){
-        const userMin = parseInt(parts[0].trim());
-        const userMax = parseInt(parts[1].trim());
-        const [homeMin, homeMax] = h.payment.split("-").map(x => parseInt(x.trim()));
+      const input = paymentInput.replace(/\s/g,''); // remove spaces
+      const [homeMin, homeMax] = h.payment.split("-").map(x=>parseInt(x));
+
+      if(input.includes('-')){
+        const [userMin, userMax] = input.split('-').map(x=>parseInt(x));
         if(!isNaN(userMin) && !isNaN(userMax)){
-          // Show any home whose payment range overlaps user range
-          matchPayment = !(homeMax < userMin || homeMin > userMax);
+          // Allow any overlap
+          matchPayment = homeMax >= userMin && homeMin <= userMax;
+        }
+      } else {
+        const val = parseInt(input);
+        if(!isNaN(val)){
+          matchPayment = val >= homeMin && val <= homeMax;
         }
       }
     }
