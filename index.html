@@ -76,14 +76,14 @@ function filterHomes() {
     // Bathrooms filter (minimum)
     let matchBaths = !baths || (baths==="3+" ? h.bathrooms>=3 : h.bathrooms>=parseInt(baths));
 
-    // Payment filter - STRICT within user range
+    // Payment filter - STRICT within user range, with trimming
     let matchPayment = true;
     if(paymentInput){
       const input = paymentInput.replace(/\s/g,''); // remove spaces
-      const [homeMin, homeMax] = h.payment.split("-").map(x=>parseInt(x));
+      const [homeMin, homeMax] = h.payment.split("-").map(x => parseInt(x.trim()));
 
       if(input.includes('-')){
-        const [userMin, userMax] = input.split('-').map(x=>parseInt(x));
+        const [userMin, userMax] = input.split('-').map(x => parseInt(x.trim()));
         if(!isNaN(userMin) && !isNaN(userMax)){
           // STRICT: homeMin and homeMax must BOTH be inside user range
           matchPayment = homeMin >= userMin && homeMax <= userMax;
