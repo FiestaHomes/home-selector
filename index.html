@@ -59,7 +59,7 @@ fetch('homes.json')
   .then(response => response.json())
   .then(data => {
     homes = data;
-    filterHomes(); // show all homes initially
+    filterHomes(); // Show all homes initially
   })
   .catch(err => console.error("Error loading homes.json:", err));
 
@@ -96,6 +96,7 @@ function filterHomes() {
     return matchBeds && matchBaths && matchPayment;
   });
 
+  // Sort by price ascending
   filtered.sort((a,b)=>a.price-b.price);
 
   const resultsDiv = document.getElementById("results");
@@ -107,12 +108,13 @@ function filterHomes() {
   }
 
   filtered.forEach(h => {
+    const sizeText = h.size ? h.size : "N/A"; // handle missing size
     const card = document.createElement("div");
     card.className = "home-card";
     card.innerHTML = `
       <h3>Home #${h.number}</h3>
       <p><strong>B-B-L:</strong> ${h.bedrooms}-${h.bathrooms}-${h.living}</p>
-      <p><strong>Size:</strong> ${h.size}</p>
+      <p><strong>Size:</strong> ${sizeText}</p>
       <p><strong>Payment:</strong> ${h.payment}</p>
       <p><strong>Price:</strong> $${h.price.toLocaleString()}</p>
       <a href="tel:4322257519" class="contact-btn">Contact for Info</a>
