@@ -99,8 +99,8 @@ function filterHomes() {
     // Bathrooms filter (exact)
     let matchBaths = !baths || h.bathrooms === parseInt(baths);
 
-    // STRICT Payment filter: only homes completely within the selected range
-    const [homeMin, homeMax] = h.payment.split("-").map(x => parseInt(x.trim()));
+    // STRICT Payment filter: home must be fully within the selected range
+    const [homeMin, homeMax] = h.payment.split("-").map(x => parseInt(x.replace(/[$,]/g,'').trim()));
     let matchPayment = homeMin >= minPayment && homeMax <= maxPayment;
 
     return matchBeds && matchBaths && matchPayment;
