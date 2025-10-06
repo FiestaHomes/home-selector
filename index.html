@@ -24,7 +24,7 @@ button:hover { background: #004c99; }
 <h1>🏡 Fiesta Homes Selector</h1>
 
 <div class="filter-section">
-<label>Bedrooms:</label>
+<label>Bedrooms (minimum):</label>
 <select id="bedrooms">
 <option value="">Any</option>
 <option value="2">2</option>
@@ -33,7 +33,7 @@ button:hover { background: #004c99; }
 <option value="5+">5+</option>
 </select>
 
-<label>Bathrooms:</label>
+<label>Bathrooms (minimum):</label>
 <select id="bathrooms">
 <option value="">Any</option>
 <option value="1">1</option>
@@ -59,8 +59,7 @@ fetch('homes.json')
   .then(response => response.json())
   .then(data => {
     homes = data;
-    console.log("Loaded homes:", homes);
-    filterHomes(); // Show all homes initially
+    filterHomes(); // show all homes initially
   })
   .catch(err => console.error("Error loading homes.json:", err));
 
@@ -69,29 +68,26 @@ function filterHomes() {
   const baths = document.getElementById("bathrooms").value;
   const paymentInput = document.getElementById("payment").value;
 
-  let filtered = homes.filter(h => {
+  const filtered = homes.filter(h => {
     // Bedrooms filter (minimum)
-    let matchBeds = !beds || (beds==="5+" ? h.bedrooms>=5 : h.bedrooms>=parseInt(beds));
-
+    let matchBeds = !beds || (beds==="5+" ? h.bedrooms >= 5 : h.bedrooms >= parseInt(beds));
     // Bathrooms filter (minimum)
-    let matchBaths = !baths || (baths==="3+" ? h.bathrooms>=3 : h.bathrooms>=parseInt(baths));
+    let matchBaths = !baths || (baths==="3+" ? h.bathrooms >= 3 : h.bathrooms >= parseInt(baths));
 
-    // Payment filter - STRICT within user range, handling $ signs and spaces
+    // Payment filter - strict within user range
     let matchPayment = true;
     if(paymentInput){
       const input = paymentInput.replace(/\s/g,''); // remove spaces
-      const [homeMin, homeMax] = h.payment.split("-").map(x => parseInt(x.replace(/\$/g,'').trim()));
-
+      const [homeMin, homeMax] = h.payment.split("-").map(x => parseInt(x.trim()));
+      
       if(input.includes('-')){
-        const [userMin, userMax] = input.split('-').map(x => parseInt(x.replace(/\$/g,'').trim()));
+        const [userMin, userMax] = input.split('-').map(x => parseInt(x.trim()));
         if(!isNaN(userMin) && !isNaN(userMax)){
-          // STRICT: homeMin and homeMax must BOTH be inside user range
           matchPayment = homeMin >= userMin && homeMax <= userMax;
         }
       } else {
-        const val = parseInt(input.replace(/\$/g,'').trim());
+        const val = parseInt(input);
         if(!isNaN(val)){
-          // Single number: home must match exactly
           matchPayment = homeMin === val && homeMax === val;
         }
       }
@@ -100,27 +96,27 @@ function filterHomes() {
     return matchBeds && matchBaths && matchPayment;
   });
 
-  // Sort by price ascending
   filtered.sort((a,b)=>a.price-b.price);
 
-  // Display results
   const resultsDiv = document.getElementById("results");
   resultsDiv.innerHTML = "";
 
-  if(filtered.length===0){
-    resultsDiv.innerHTML="<p>No homes found. Try adjusting your filters.</p>";
+  if(filtered.length === 0){
+    resultsDiv.innerHTML = "<p>No homes found. Try adjusting your filters.</p>";
     return;
   }
 
-  filtered.forEach(h=>{
-    const card=document.createElement("div");
-    card.className="home-card";
-    card.innerHTML=`<h3>Home #${h.number}</h3>
-    <p><strong>B-B-L:</strong> ${h.bedrooms}-${h.bathrooms}-${h.living}</p>
-    <p><strong>Size:</strong> ${h.size}</p>
-    <p><strong>Payment:</strong> ${h.payment}</p>
-    <p><strong>Price:</strong> $${h.price.toLocaleString()}</p>
-    <a href="tel:4322257519" class="contact-btn">Contact for Info</a>`;
+  filtered.forEach(h => {
+    const card = document.createElement("div");
+    card.className = "home-card";
+    card.innerHTML = `
+      <h3>Home #${h.number}</h3>
+      <p><strong>B-B-L:</strong> ${h.bedrooms}-${h.bathrooms}-${h.living}</p>
+      <p><strong>Size:</strong> ${h.size}</p>
+      <p><strong>Payment:</strong> ${h.payment}</p>
+      <p><strong>Price:</strong> $${h.price.toLocaleString()}</p>
+      <a href="tel:4322257519" class="contact-btn">Contact for Info</a>
+    `;
     resultsDiv.appendChild(card);
   });
 }
