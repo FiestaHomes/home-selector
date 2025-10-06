@@ -107,15 +107,15 @@ function filterHomes() {
   const landAdd = document.getElementById("land").checked ? 800 : 0;
   const taxesAdd = document.getElementById("taxes").checked ? 300 : 0;
 
-  minPayment += parkAdd + landAdd + taxesAdd;
-  maxPayment += parkAdd + landAdd + taxesAdd;
+  const adjustedMin = minPayment + parkAdd + landAdd + taxesAdd;
+  const adjustedMax = maxPayment + parkAdd + landAdd + taxesAdd;
 
   const filtered = homes.filter(h => {
     const matchBeds = !beds || h.bedrooms === parseInt(beds);
     const matchBaths = !baths || h.bathrooms === parseInt(baths);
 
     const [homeMin, homeMax] = h.payment.split("-").map(x => parseInt(x.replace(/[$,]/g,'').trim()));
-    const matchPayment = homeMin >= minPayment && homeMax <= maxPayment;
+    const matchPayment = homeMin >= adjustedMin && homeMax <= adjustedMax;
 
     return matchBeds && matchBaths && matchPayment;
   });
@@ -131,12 +131,17 @@ function filterHomes() {
   }
 
   filtered.forEach(h => {
+    const homeMin = parseInt(h.payment.split("-")[0].replace(/[$,]/g,''));
+    const homeMax = parseInt(h.payment.split("-")[1].replace(/[$,]/g,''));
+    const totalMin = homeMin + parkAdd + landAdd + taxesAdd;
+    const totalMax = homeMax + parkAdd + landAdd + taxesAdd;
+
     const card = document.createElement("div");
     card.className = "home-card";
     card.innerHTML = `
       <h3>Home #${h.number}</h3>
       <p><strong>B-B:</strong> ${h.bedrooms}-${h.bathrooms}</p>
-      <p><strong>Payment:</strong> ${h.payment}</p>
+      <p><strong>Payment:</strong> $${totalMin} - $${totalMax}</p>
       <p><strong>Price:</strong> $${h.price.toLocaleString()}</p>
       <a href="tel:4322257519" class="contact-btn">Contact for Info</a>
     `;
