@@ -1,159 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fiesta Homes Finder</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f6f8fa;
-      margin: 0;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-    }
-    .filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-    input[type="number"] {
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      width: 130px;
-    }
-    button {
-      padding: 10px 20px;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #0056b3;
-    }
-    .home-card {
-      background: white;
-      border-radius: 10px;
-      padding: 15px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      margin-bottom: 10px;
-      max-width: 400px;
-      margin: 10px auto;
-    }
-    .home-card h3 {
-      margin: 0 0 5px;
-    }
-    .checkboxes {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .checkboxes label {
-      margin-right: 15px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fiesta Homes Selector</title>
+<style>
+body { font-family: Arial, sans-serif; background: #f4f4f4; margin:0; padding:20px; }
+h1 { text-align: center; color: #2b2b2b; }
+.filter-section, .results { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 800px; margin: 20px auto; }
+label { display: block; margin: 10px 0 5px; font-weight: bold; }
+select, input, button { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size:16px; }
+button { background: #0066cc; color:white; border:none; cursor:pointer; margin-top: 15px; }
+button:hover { background: #004c99; }
+.home-card { background: #fafafa; border-radius: 8px; padding: 15px; margin-bottom: 15px; border: 1px solid #ddd; }
+.home-card h3 { margin: 0; color: #333; }
+.home-card p { margin: 5px 0; }
+.contact-btn { display:inline-block; margin-top:10px; padding:8px 12px; background:#0066cc; color:white; border-radius:6px; text-decoration:none; }
+.contact-btn:hover { background:#004c99; }
+.slider-container { margin-bottom: 15px; }
+.slider-label { display:flex; justify-content:space-between; }
+.checkbox-container { margin: 15px 0; }
+.checkbox-container label { display:inline-block; margin-right:15px; font-weight: normal; }
+</style>
 </head>
 <body>
-  <h1>Fiesta Homes Finder</h1>
 
-  <div class="filters">
-    <input type="number" id="bedrooms" placeholder="Bedrooms">
-    <input type="number" id="bathrooms" placeholder="Bathrooms">
-    <input type="number" id="minPayment" placeholder="Min Payment">
-    <input type="number" id="maxPayment" placeholder="Max Payment">
-    <button onclick="filterHomes()">Filter</button>
-    <button onclick="resetFilters()">Reset</button>
-  </div>
+<h1>🏡 Fiesta Homes Selector</h1>
 
-  <div class="checkboxes">
-    <label><input type="radio" name="placement" id="park" value="400" onchange="filterHomes()"> Park (+$400)</label>
-    <label><input type="radio" name="placement" id="land" value="800" onchange="filterHomes()"> Land (+$800)</label>
-    <label><input type="checkbox" id="taxes" value="300" onchange="filterHomes()"> Property Taxes & Insurance (+$300)</label>
-  </div>
+<div class="filter-section">
+<label>Bedrooms (exact):</label>
+<select id="bedrooms">
+<option value="">Any</option>
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+<option value="5">5</option>
+</select>
 
-  <div id="results"></div>
+<label>Bathrooms (exact):</label>
+<select id="bathrooms">
+<option value="">Any</option>
+<option value="1">1</option>
+<option value="2">2</option>
+<option value="3">3</option>
+</select>
 
-  <script>
-    let homes = [];
+<div class="slider-container">
+  <label class="slider-label">
+    <span>Payment Range ($):</span>
+    <span id="payment-display">1000 - 2000</span>
+  </label>
+  <input type="range" id="payment-min" min="0" max="5000" value="1000" step="50">
+  <input type="range" id="payment-max" min="0" max="5000" value="2000" step="50">
+</div>
 
-    // Load homes from JSON
-    fetch('homes.json')
-      .then(response => response.json())
-      .then(data => {
-        homes = data;
-        displayHomes(homes);
-      })
-      .catch(error => console.error('Error loading homes:', error));
+<div class="checkbox-container">
+  <label><input type="radio" name="placement" id="park" value="400" onchange="filterHomes()"> Park (+$400)</label>
+  <label><input type="radio" name="placement" id="land" value="800" onchange="filterHomes()"> Land (+$800)</label>
+  <label><input type="checkbox" id="taxes" value="300" onchange="filterHomes()"> Property Taxes & Insurance (+$300)</label>
+</div>
 
-    function filterHomes() {
-      const beds = parseInt(document.getElementById('bedrooms').value) || null;
-      const baths = parseInt(document.getElementById('bathrooms').value) || null;
-      let minPayment = parseInt(document.getElementById('minPayment').value) || 0;
-      let maxPayment = parseInt(document.getElementById('maxPayment').value) || Infinity;
+<button onclick="filterHomes()">Find Homes</button>
+<button onclick="resetFilters()">Reset</button>
+</div>
 
-      // Add-ons
-      const parkAdd = document.getElementById('park').checked ? 400 : 0;
-      const landAdd = document.getElementById('land').checked ? 800 : 0;
-      const taxesAdd = document.getElementById('taxes').checked ? 300 : 0;
+<div class="results" id="results">
+<p>Use the filters above to see matching homes.</p>
+</div>
 
-      minPayment += parkAdd + landAdd + taxesAdd;
-      maxPayment += parkAdd + landAdd + taxesAdd;
+<script>
+let homes = [];
 
-      const filtered = homes.filter(h => {
-        const matchBeds = !beds || h.bedrooms === beds;
-        const matchBaths = !baths || h.bathrooms === baths;
+// Load homes from JSON
+fetch('homes.json')
+  .then(response => response.json())
+  .then(data => {
+    homes = data;
+    filterHomes(); // Show all homes initially
+  })
+  .catch(err => console.error("Error loading homes.json:", err));
 
-        const [homeMin, homeMax] = h.payment.split('-').map(x => parseInt(x.trim()));
-        const matchPayment = homeMin >= minPayment && homeMax <= maxPayment;
+// Slider display update
+const paymentMin = document.getElementById("payment-min");
+const paymentMax = document.getElementById("payment-max");
+const paymentDisplay = document.getElementById("payment-display");
 
-        return matchBeds && matchBaths && matchPayment;
-      });
+function updatePaymentDisplay() {
+  let minVal = parseInt(paymentMin.value);
+  let maxVal = parseInt(paymentMax.value);
+  if(minVal > maxVal) [minVal, maxVal] = [maxVal, minVal];
+  paymentDisplay.textContent = `${minVal} - ${maxVal}`;
+}
 
-      displayHomes(filtered);
-    }
+paymentMin.addEventListener("input", updatePaymentDisplay);
+paymentMax.addEventListener("input", updatePaymentDisplay);
 
-    function displayHomes(list) {
-      const results = document.getElementById('results');
-      results.innerHTML = '';
+function filterHomes() {
+  const beds = document.getElementById("bedrooms").value;
+  const baths = document.getElementById("bathrooms").value;
+  let minPayment = parseInt(paymentMin.value);
+  let maxPayment = parseInt(paymentMax.value);
+  if(minPayment > maxPayment) [minPayment, maxPayment] = [maxPayment, minPayment];
 
-      if (list.length === 0) {
-        results.innerHTML = '<p>No homes found within the specified range.</p>';
-        return;
-      }
+  // Add-ons
+  const parkAdd = document.getElementById("park").checked ? 400 : 0;
+  const landAdd = document.getElementById("land").checked ? 800 : 0;
+  const taxesAdd = document.getElementById("taxes").checked ? 300 : 0;
 
-      list.sort((a, b) => a.price - b.price);
+  minPayment += parkAdd + landAdd + taxesAdd;
+  maxPayment += parkAdd + landAdd + taxesAdd;
 
-      list.forEach(h => {
-        const div = document.createElement('div');
-        div.classList.add('home-card');
-        div.innerHTML = `
-          <h3>Home #${h.number}</h3>
-          <p><strong>B-B:</strong> ${h.bedrooms}-${h.bathrooms}</p>
-          <p><strong>Payment:</strong> ${h.payment}</p>
-          <p><strong>Price:</strong> $${h.price.toLocaleString()}</p>
-          <p><strong>Size:</strong> ${h.size || 'N/A'}</p>
-          <button onclick="alert('Contact Fiesta Homes for info on Home #${h.number}')">Contact for Info</button>
-        `;
-        results.appendChild(div);
-      });
-    }
+  const filtered = homes.filter(h => {
+    let matchBeds = !beds || h.bedrooms === parseInt(beds);
+    let matchBaths = !baths || h.bathrooms === parseInt(baths);
 
-    function resetFilters() {
-      document.getElementById('bedrooms').value = '';
-      document.getElementById('bathrooms').value = '';
-      document.getElementById('minPayment').value = '';
-      document.getElementById('maxPayment').value = '';
-      document.getElementById('park').checked = false;
-      document.getElementById('land').checked = false;
-      document.getElementById('taxes').checked = false;
-      displayHomes(homes);
-    }
-  </script>
+    const [homeMin, homeMax] = h.payment.split("-").map(x => parseInt(x.replace(/[$,]/g,'').trim()));
+    let matchPayment = homeMin >= minPayment && homeMax <= maxPayment;
+
+    return matchBeds && matchBaths && matchPayment;
+  });
+
+  filtered.sort((a,b)=>a.price-b.price);
+
+  const resultsDiv = document.getElementById("results");
+  resultsDiv.innerHTML = "";
+
+  if(filtered.length === 0){
+    resultsDiv.innerHTML = "<p>No homes found. Try adjusting your filters.</p>";
+    return;
+  }
+
+  filtered.forEach(h => {
+    const card = document.createElement("div");
+    card.className = "home-card";
+    card.innerHTML = `
+      <h3>Home #${h.number}</h3>
+      <p><strong>B-B:</strong> ${h.bedrooms}-${h.bathrooms}</p>
+      <p><strong>Payment:</strong> ${h.payment}</p>
+      <p><strong>Price:</strong> $${h.price.toLocaleString()}</p>
+      <a href="tel:4322257519" class="contact-btn">Contact for Info</a>
+    `;
+    resultsDiv.appendChild(card);
+  });
+}
+
+function resetFilters() {
+  document.getElementById("bedrooms").value = '';
+  document.getElementById("bathrooms").value = '';
+  paymentMin.value = 1000;
+  paymentMax.value = 2000;
+  updatePaymentDisplay();
+  document.getElementById("park").checked = false;
+  document.getElementById("land").checked = false;
+  document.getElementById("taxes").checked = false;
+  filterHomes();
+}
+
+updatePaymentDisplay();
+</script>
+
 </body>
 </html>
