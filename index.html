@@ -67,11 +67,11 @@ fetch('homes.json')
   .then(response => response.json())
   .then(data => {
     homes = data;
-    filterHomes(); // show all homes initially
+    filterHomes(); // Show all homes initially
   })
   .catch(err => console.error("Error loading homes.json:", err));
 
-// Update displayed slider values
+// Slider display update
 const paymentMin = document.getElementById("payment-min");
 const paymentMax = document.getElementById("payment-max");
 const paymentDisplay = document.getElementById("payment-display");
@@ -79,7 +79,7 @@ const paymentDisplay = document.getElementById("payment-display");
 function updatePaymentDisplay() {
   let minVal = parseInt(paymentMin.value);
   let maxVal = parseInt(paymentMax.value);
-  if(minVal > maxVal) [minVal, maxVal] = [maxVal, minVal]; // swap if min > max
+  if(minVal > maxVal) [minVal, maxVal] = [maxVal, minVal];
   paymentDisplay.textContent = `${minVal} - ${maxVal}`;
 }
 
@@ -99,9 +99,9 @@ function filterHomes() {
     // Bathrooms filter (minimum)
     let matchBaths = !baths || (baths==="3+" ? h.bathrooms >= 3 : h.bathrooms >= parseInt(baths));
 
-    // Payment filter - strict within slider range
+    // Payment filter: show only if any part of the home's range is within the user range
     const [homeMin, homeMax] = h.payment.split("-").map(x => parseInt(x.trim()));
-    let matchPayment = homeMin >= minPayment && homeMax <= maxPayment;
+    let matchPayment = homeMin <= maxPayment && homeMax >= minPayment;
 
     return matchBeds && matchBaths && matchPayment;
   });
@@ -117,7 +117,7 @@ function filterHomes() {
   }
 
   filtered.forEach(h => {
-    const sizeText = h.size ? h.size : "N/A"; // handle missing size
+    const sizeText = h.size ? h.size : "N/A";
     const card = document.createElement("div");
     card.className = "home-card";
     card.innerHTML = `
@@ -132,7 +132,6 @@ function filterHomes() {
   });
 }
 
-// Initialize display
 updatePaymentDisplay();
 </script>
 
